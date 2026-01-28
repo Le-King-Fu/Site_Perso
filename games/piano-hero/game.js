@@ -74,7 +74,7 @@ function gameLoop() {
 function update() {
     // Spawn new notes
     const now = Date.now();
-    if (now - lastNoteTime > 800) { // New note every 800ms
+    if (now - lastNoteTime > 1600) { // New note every 800ms
         spawnNote();
         lastNoteTime = now;
     }
