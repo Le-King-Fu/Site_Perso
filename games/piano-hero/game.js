@@ -2,6 +2,25 @@
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
 
+// Audio
+let audioCtx = null;
+let melodyInterval = null;
+let melodyIndex = 0;
+
+// Note frequencies (Hz)
+const NOTE_FREQ = {
+    'C': 261.63,
+    'D': 293.66,
+    'E': 329.63,
+    'F': 349.23,
+    'G': 392.00,
+    'A': 440.00,
+    'B': 493.88
+};
+
+// Simple melody pattern
+const MELODY = ['C', 'E', 'G', 'E', 'C', 'E', 'G', 'A', 'G', 'E', 'D', 'E', 'F', 'E', 'D', 'C'];
+
 // Game settings
 const CANVAS_WIDTH = 600;
 const CANVAS_HEIGHT = 400;
@@ -55,6 +74,80 @@ const LANE_COLORS = [
     '#8b5cf6', // purple
     '#ec4899'  // pink
 ];
+
+// Audio functions
+function initAudio() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+}
+
+function playNote(frequency, duration = 0.3, volume = 0.1) {
+    if (!audioCtx) return;
+
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+
+    gainNode.gain.setValueAtTime(volume, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+
+    oscillator.start(audioCtx.currentTime);
+    oscillator.stop(audioCtx.currentTime + duration);
+}
+
+function playMelodyNote() {
+    const note = MELODY[melodyIndex];
+    playNote(NOTE_FREQ[note], 0.4, 0.05);
+    melodyIndex = (melodyIndex + 1) % MELODY.length;
+}
+
+function startMelody() {
+    melodyIndex = 0;
+    // Play melody note every 400ms
+    melodyInterval = setInterval(playMelodyNote, 400);
+}
+
+function stopMelody() {
+    if (melodyInterval) {
+        clearInterval(melodyInterval);
+        melodyInterval = null;
+    }
+}
+
+function playDiscordantSound() {
+    if (!audioCtx) return;
+
+    // Play multiple clashing frequencies for a harsh sound
+    const dissonantFreqs = [110, 117, 123]; // Low, clashing frequencies
+
+    dissonantFreqs.forEach((freq, i) => {
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        oscillator.type = 'sawtooth';
+        oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+        gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+
+        oscillator.start(audioCtx.currentTime);
+        oscillator.stop(audioCtx.currentTime + 0.2);
+    });
+}
+
+function playHitSound(note) {
+    if (!audioCtx) return;
+    playNote(NOTE_FREQ[note], 0.15, 0.2);
+}
 
 // Initialize
 function init() {
@@ -116,12 +209,19 @@ function startGame() {
     // Disable level selection during game
     document.querySelectorAll('.level-btn').forEach(btn => btn.disabled = true);
 
+    // Start audio
+    initAudio();
+    startMelody();
+
     gameLoop();
 }
 
 function stopGame() {
     gameRunning = false;
     fallingNotes = [];
+
+    // Stop audio
+    stopMelody();
 
     // Save scores before resetting
     lastScore = score;
@@ -171,6 +271,10 @@ function update() {
 
         // Remove notes that passed the bottom
         if (note.y > CANVAS_HEIGHT) {
+            // Play discordant sound if note was missed
+            if (!note.hit) {
+                playDiscordantSound();
+            }
             fallingNotes.splice(i, 1);
         }
     }
@@ -259,6 +363,9 @@ function checkHit(note) {
                 fallingNote.hit = true;
                 score += 100;
                 updateScore();
+
+                // Play hit sound
+                playHitSound(note);
 
                 // Visual feedback on piano key
                 const keyEl = document.querySelector(`.key[data-note="${note}"]`);
