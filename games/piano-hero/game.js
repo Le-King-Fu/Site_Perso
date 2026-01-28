@@ -68,42 +68,6 @@ let lastNoteTime = 0;
 let currentLevel = 0;
 let noteSpeed = LEVELS[0].speed;
 let spawnInterval = LEVELS[0].spawnInterval;
-let playerName = '';
-
-// Leaderboard
-const LEADERBOARD_KEY = 'pianoHeroLeaderboard';
-const MAX_LEADERBOARD = 10;
-
-// Random name generator
-const ADJECTIVES = [
-    'Funky', 'Groovy', 'Jazzy', 'Bouncy', 'Snappy', 'Zippy', 'Wobbly', 'Speedy',
-    'Dizzy', 'Fluffy', 'Sneaky', 'Cheeky', 'Clumsy', 'Giggly', 'Wacky', 'Zesty',
-    'Spicy', 'Cosmic', 'Turbo', 'Mighty', 'Silly', 'Crazy', 'Lucky', 'Happy'
-];
-
-const ANIMALS = [
-    'Penguin', 'Panda', 'Koala', 'Llama', 'Sloth', 'Otter', 'Raccoon', 'Fox',
-    'Owl', 'Dolphin', 'Octopus', 'Hamster', 'Bunny', 'Platypus', 'Capybara',
-    'Hedgehog', 'Narwhal', 'Axolotl', 'Quokka', 'Alpaca', 'Walrus', 'Moose'
-];
-let playerName = '';
-
-// Leaderboard
-const LEADERBOARD_KEY = 'pianoHeroLeaderboard';
-const MAX_LEADERBOARD = 10;
-
-// Random name generator
-const ADJECTIVES = [
-    'Funky', 'Groovy', 'Jazzy', 'Bouncy', 'Snappy', 'Zippy', 'Wobbly', 'Speedy',
-    'Dizzy', 'Fluffy', 'Sneaky', 'Cheeky', 'Clumsy', 'Giggly', 'Wacky', 'Zesty',
-    'Spicy', 'Cosmic', 'Turbo', 'Mighty', 'Silly', 'Crazy', 'Lucky', 'Happy'
-];
-
-const ANIMALS = [
-    'Penguin', 'Panda', 'Koala', 'Llama', 'Sloth', 'Otter', 'Raccoon', 'Fox',
-    'Owl', 'Dolphin', 'Octopus', 'Hamster', 'Bunny', 'Platypus', 'Capybara',
-    'Hedgehog', 'Narwhal', 'Axolotl', 'Quokka', 'Alpaca', 'Walrus', 'Moose'
-];
 
 // Colors for each lane
 const LANE_COLORS = [
@@ -198,126 +162,16 @@ function playBonusSound() {
     setTimeout(() => playNote(783.99, 0.15, 0.2), 100); // G5
 }
 
-// Leaderboard functions
-function generateRandomName() {
-    const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
-    const animal = ANIMALS[Math.floor(Math.random() * ANIMALS.length)];
-    return `${adj} ${animal}`;
-}
-
-function getLeaderboard() {
-    const data = localStorage.getItem(LEADERBOARD_KEY);
-    return data ? JSON.parse(data) : [];
-}
-
-function saveLeaderboard(leaderboard) {
-    localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(leaderboard));
-}
-
-function isHighScore(newScore) {
-    if (newScore === 0) return false;
-    const leaderboard = getLeaderboard();
-    if (leaderboard.length < MAX_LEADERBOARD) return true;
-    return newScore > leaderboard[leaderboard.length - 1].score;
-}
-
-function addToLeaderboard(name, newScore, level) {
-    const leaderboard = getLeaderboard();
-    leaderboard.push({
-        name: name,
-        score: newScore,
-        level: LEVELS[level].name,
-        date: new Date().toLocaleDateString()
-    });
-    leaderboard.sort((a, b) => b.score - a.score);
-    if (leaderboard.length > MAX_LEADERBOARD) {
-        leaderboard.length = MAX_LEADERBOARD;
-    }
-    saveLeaderboard(leaderboard);
-    renderLeaderboard();
-}
-
-function renderLeaderboard() {
-    const container = document.getElementById('leaderboard-list');
-    if (!container) return;
-
-    const leaderboard = getLeaderboard();
-
-    if (leaderboard.length === 0) {
-        container.innerHTML = '<div class="no-scores">No scores yet!</div>';
-        return;
-    }
-
-    container.innerHTML = leaderboard.map((entry, i) => `
-        <div class="leaderboard-entry ${i < 3 ? 'top-' + (i + 1) : ''}">
-            <span class="rank">#${i + 1}</span>
-            <span class="name">${entry.name}</span>
-            <span class="entry-score">${entry.score}</span>
-        </div>
-    `).join('');
-}
-
-function showNamePrompt(finalScore) {
-    const modal = document.getElementById('name-modal');
-    const input = document.getElementById('player-name-input');
-    const randomName = generateRandomName();
-
-    input.placeholder = randomName;
-    input.value = '';
-    document.getElementById('final-score').textContent = finalScore;
-
-    modal.classList.add('show');
-    setTimeout(() => input.focus(), 100);
-}
-
-function hideNamePrompt() {
-    document.getElementById('name-modal').classList.remove('show');
-}
-
-function submitScore() {
-    const input = document.getElementById('player-name-input');
-    let name = input.value.trim();
-
-    if (!name) {
-        name = generateRandomName();
-    }
-
-    playerName = name;
-    addToLeaderboard(name, lastScore, currentLevel);
-    hideNamePrompt();
-}
-
 // Initialize
 function init() {
     createLevelSelector();
     setupPianoKeys();
-    setupNameModal();
     document.getElementById('start-btn').addEventListener('click', toggleGame);
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('keyup', handleKeyUp);
 
-    // Load and display leaderboard
-    renderLeaderboard();
-
     // Draw initial state
     draw();
-}
-
-function setupNameModal() {
-    const submitBtn = document.getElementById('submit-score-btn');
-    const input = document.getElementById('player-name-input');
-
-    if (submitBtn) {
-        submitBtn.addEventListener('click', submitScore);
-    }
-
-    if (input) {
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                submitScore();
-            }
-        });
-    }
 }
 
 function setupPianoKeys() {
@@ -429,11 +283,6 @@ function stopGame() {
         highScore = score;
     }
     updateScoreDisplay();
-
-    // Check if score qualifies for leaderboard
-    if (isHighScore(score)) {
-        showNamePrompt(score);
-    }
 
     score = 0;
     document.getElementById('start-btn').textContent = 'Start Game';
