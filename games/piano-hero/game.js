@@ -57,7 +57,7 @@ const LANE_COLORS = [
 // Initialize
 function init() {
     createLevelSelector();
-    document.getElementById('start-btn').addEventListener('click', startGame);
+    document.getElementById('start-btn').addEventListener('click', toggleGame);
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('keyup', handleKeyUp);
 
@@ -109,8 +109,7 @@ function startGame() {
     fallingNotes = [];
     lastNoteTime = 0;
     updateScore();
-    document.getElementById('start-btn').textContent = 'Playing...';
-    document.getElementById('start-btn').disabled = true;
+    document.getElementById('start-btn').textContent = 'Stop';
 
     // Disable level selection during game
     document.querySelectorAll('.level-btn').forEach(btn => btn.disabled = true);
@@ -120,11 +119,24 @@ function startGame() {
 
 function stopGame() {
     gameRunning = false;
+    fallingNotes = [];
+    score = 0;
+    updateScore();
     document.getElementById('start-btn').textContent = 'Start Game';
-    document.getElementById('start-btn').disabled = false;
 
     // Re-enable level selection
     document.querySelectorAll('.level-btn').forEach(btn => btn.disabled = false);
+
+    // Redraw to clear notes from canvas
+    draw();
+}
+
+function toggleGame() {
+    if (gameRunning) {
+        stopGame();
+    } else {
+        startGame();
+    }
 }
 
 function gameLoop() {
