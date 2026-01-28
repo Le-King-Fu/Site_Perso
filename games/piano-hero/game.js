@@ -152,12 +152,53 @@ function playHitSound(note) {
 // Initialize
 function init() {
     createLevelSelector();
+    setupPianoKeys();
     document.getElementById('start-btn').addEventListener('click', toggleGame);
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('keyup', handleKeyUp);
 
     // Draw initial state
     draw();
+}
+
+function setupPianoKeys() {
+    const keys = document.querySelectorAll('.key');
+
+    keys.forEach(key => {
+        const note = key.dataset.note;
+
+        // Mouse events
+        key.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            handlePianoKeyPress(note);
+            key.classList.add('active');
+        });
+
+        key.addEventListener('mouseup', () => {
+            key.classList.remove('active');
+        });
+
+        key.addEventListener('mouseleave', () => {
+            key.classList.remove('active');
+        });
+
+        // Touch events for mobile
+        key.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handlePianoKeyPress(note);
+            key.classList.add('active');
+        });
+
+        key.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            key.classList.remove('active');
+        });
+    });
+}
+
+function handlePianoKeyPress(note) {
+    if (!gameRunning) return;
+    checkHit(note);
 }
 
 function createLevelSelector() {

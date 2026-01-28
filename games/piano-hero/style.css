@@ -167,3 +167,106 @@ body {
     font-size: 14px;
     min-width: 70px;
 }
+
+/* Mobile styles */
+@media (max-width: 650px) {
+    body {
+        padding: 10px;
+        align-items: flex-start;
+        padding-top: 20px;
+    }
+
+    #game-container {
+        width: 100%;
+        gap: 15px;
+    }
+
+    #game-canvas {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+    }
+
+    #piano {
+        height: 120px;
+        justify-content: center;
+    }
+
+    .key.white {
+        width: 40px;
+        height: 120px;
+    }
+
+    .key.black {
+        width: 24px;
+        height: 80px;
+        margin-left: -12px;
+        margin-right: -12px;
+    }
+
+    #ui {
+        flex-direction: column;
+        gap: 15px;
+        width: 100%;
+    }
+
+    #scores {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    #score {
+        font-size: 20px;
+    }
+
+    #high-score,
+    #last-score {
+        font-size: 14px;
+    }
+
+    #level-control {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    #level-name {
+        width: 100%;
+        text-align: center;
+        min-width: auto;
+    }
+
+    #start-btn {
+        width: 100%;
+        max-width: 200px;
+        padding: 15px 30px;
+        font-size: 16px;
+    }
+}
+
+/* Prevent zoom on double-tap for piano keys */
+.key {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+/* Larger touch targets on mobile */
+@media (max-width: 650px) {
+    .level-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+
+    /* Hide black keys on mobile - not used in game */
+    .key.black {
+        display: none;
+    }
+
+    /* Make white keys bigger without black keys */
+    .key.white {
+        width: calc((100vw - 40px) / 7);
+        max-width: 50px;
+    }
+}
