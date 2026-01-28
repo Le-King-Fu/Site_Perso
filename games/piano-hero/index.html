@@ -36,7 +36,23 @@
             </div>
             <button id="start-btn">Start Game</button>
         </div>
+        <div id="leaderboard">
+            <h3>Leaderboard</h3>
+            <div id="leaderboard-list"></div>
+        </div>
     </div>
+
+    <!-- Name input modal -->
+    <div id="name-modal">
+        <div class="modal-content">
+            <h2>New High Score!</h2>
+            <p class="final-score-display">Score: <span id="final-score">0</span></p>
+            <input type="text" id="player-name-input" maxlength="20" placeholder="Enter your name...">
+            <p class="hint">Leave empty for a random name</p>
+            <button id="submit-score-btn">Submit Score</button>
+        </div>
+    </div>
+
     <script src="game.js"></script>
 </body>
 </html>
