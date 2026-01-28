@@ -1,0 +1,103 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+#game-canvas {
+    background: linear-gradient(180deg, #0f0f23 0%, #1a1a3e 100%);
+    border: 2px solid #4a4a8a;
+    border-radius: 8px;
+}
+
+#piano {
+    display: flex;
+    position: relative;
+    height: 150px;
+}
+
+.key {
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.key.white {
+    width: 50px;
+    height: 150px;
+    background: linear-gradient(180deg, #fff 0%, #e8e8e8 100%);
+    border: 1px solid #999;
+    border-radius: 0 0 6px 6px;
+    z-index: 1;
+}
+
+.key.white:hover,
+.key.white.active {
+    background: linear-gradient(180deg, #ddd 0%, #ccc 100%);
+}
+
+.key.black {
+    width: 30px;
+    height: 100px;
+    background: linear-gradient(180deg, #333 0%, #000 100%);
+    border-radius: 0 0 4px 4px;
+    margin-left: -15px;
+    margin-right: -15px;
+    z-index: 2;
+}
+
+.key.black:hover,
+.key.black.active {
+    background: linear-gradient(180deg, #555 0%, #222 100%);
+}
+
+.key.hit {
+    background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%) !important;
+}
+
+#ui {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+#score {
+    color: #fff;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+#start-btn {
+    padding: 12px 30px;
+    font-size: 18px;
+    background: linear-gradient(180deg, #6366f1 0%, #4f46e5 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+#start-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+#start-btn:active {
+    transform: translateY(0);
+}

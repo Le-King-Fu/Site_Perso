@@ -56,11 +56,14 @@ h1 {
     border-color: #888;
 }
 
-.projects {
+.projects,
+.games {
     text-align: left;
+    margin-bottom: 2rem;
 }
 
-.projects h2 {
+.projects h2,
+.games h2 {
     font-size: 1rem;
     color: #888;
     margin-bottom: 1rem;
@@ -68,20 +71,24 @@ h1 {
     letter-spacing: 0.1em;
 }
 
-.projects ul {
+.projects ul,
+.games ul {
     list-style: none;
 }
 
-.projects li {
+.projects li,
+.games li {
     padding: 0.8rem 0;
     border-bottom: 1px solid #1a1a1a;
 }
 
-.projects a {
+.projects a,
+.games a {
     color: #fff;
     text-decoration: none;
 }
 
-.projects a:hover {
+.projects a:hover,
+.games a:hover {
     text-decoration: underline;
 }
