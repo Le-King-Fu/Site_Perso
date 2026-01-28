@@ -7,6 +7,11 @@ let audioCtx = null;
 let melodyInterval = null;
 let melodyIndex = 0;
 
+// Bonus image
+const bonusImg = new Image();
+bonusImg.src = 'Bonus.png';
+const BONUS_CHANCE = 0.15; // 15% chance for bonus note
+
 // Note frequencies (Hz)
 const NOTE_FREQ = {
     'C': 261.63,
@@ -147,6 +152,14 @@ function playDiscordantSound() {
 function playHitSound(note) {
     if (!audioCtx) return;
     playNote(NOTE_FREQ[note], 0.15, 0.2);
+}
+
+function playBonusSound() {
+    if (!audioCtx) return;
+    // Play a cheerful arpeggio for bonus
+    playNote(523.25, 0.1, 0.15); // C5
+    setTimeout(() => playNote(659.25, 0.1, 0.15), 50); // E5
+    setTimeout(() => playNote(783.99, 0.15, 0.2), 100); // G5
 }
 
 // Initialize
@@ -323,11 +336,13 @@ function update() {
 
 function spawnNote() {
     const noteIndex = Math.floor(Math.random() * NOTES.length);
+    const isBonus = Math.random() < BONUS_CHANCE;
     fallingNotes.push({
         note: NOTES[noteIndex],
         lane: noteIndex,
         y: -NOTE_HEIGHT,
-        hit: false
+        hit: false,
+        bonus: isBonus
     });
 }
 
@@ -361,16 +376,43 @@ function draw() {
     // Draw falling notes
     for (const note of fallingNotes) {
         const x = note.lane * LANE_WIDTH + 5;
-        ctx.fillStyle = note.hit ? '#22c55e' : LANE_COLORS[note.lane];
-        ctx.beginPath();
-        ctx.roundRect(x, note.y, LANE_WIDTH - 10, NOTE_HEIGHT, 8);
-        ctx.fill();
+        const noteWidth = LANE_WIDTH - 10;
 
-        // Note label
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 16px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(note.note, x + (LANE_WIDTH - 10) / 2, note.y + NOTE_HEIGHT / 2 + 6);
+        if (note.bonus && bonusImg.complete) {
+            // Draw bonus image with pulsing/wobble animation
+            if (note.hit) {
+                ctx.globalAlpha = 0.5;
+            }
+
+            // Pulsing scale effect
+            const pulse = 1 + Math.sin(Date.now() / 100) * 0.1;
+            const wobble = Math.sin(Date.now() / 150) * 3;
+
+            const scaledWidth = noteWidth * pulse;
+            const scaledHeight = NOTE_HEIGHT * pulse;
+            const offsetX = (noteWidth - scaledWidth) / 2;
+            const offsetY = (NOTE_HEIGHT - scaledHeight) / 2;
+
+            ctx.save();
+            ctx.translate(x + noteWidth / 2, note.y + NOTE_HEIGHT / 2);
+            ctx.rotate(Math.sin(Date.now() / 200) * 0.1);
+            ctx.drawImage(bonusImg, -scaledWidth / 2 + wobble, -scaledHeight / 2, scaledWidth, scaledHeight);
+            ctx.restore();
+
+            ctx.globalAlpha = 1;
+        } else {
+            // Draw regular note
+            ctx.fillStyle = note.hit ? '#22c55e' : LANE_COLORS[note.lane];
+            ctx.beginPath();
+            ctx.roundRect(x, note.y, noteWidth, NOTE_HEIGHT, 8);
+            ctx.fill();
+
+            // Note label
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 16px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(note.note, x + noteWidth / 2, note.y + NOTE_HEIGHT / 2 + 6);
+        }
     }
 }
 
@@ -402,11 +444,16 @@ function checkHit(note) {
             // Check if note is in hit zone
             if (fallingNote.y >= HIT_ZONE_Y - 30 && fallingNote.y <= HIT_ZONE_Y + 50) {
                 fallingNote.hit = true;
-                score += 100;
-                updateScore();
 
-                // Play hit sound
-                playHitSound(note);
+                // Bonus gives 3x score
+                if (fallingNote.bonus) {
+                    score += 300;
+                    playBonusSound();
+                } else {
+                    score += 100;
+                    playHitSound(note);
+                }
+                updateScore();
 
                 // Visual feedback on piano key
                 const keyEl = document.querySelector(`.key[data-note="${note}"]`);
