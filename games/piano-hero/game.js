@@ -37,6 +37,8 @@ const KEY_MAP = {
 // Game state
 let gameRunning = false;
 let score = 0;
+let highScore = 0;
+let lastScore = 0;
 let fallingNotes = [];
 let lastNoteTime = 0;
 let currentLevel = 0;
@@ -120,8 +122,15 @@ function startGame() {
 function stopGame() {
     gameRunning = false;
     fallingNotes = [];
+
+    // Save scores before resetting
+    lastScore = score;
+    if (score > highScore) {
+        highScore = score;
+    }
+    updateScoreDisplay();
+
     score = 0;
-    updateScore();
     document.getElementById('start-btn').textContent = 'Start Game';
 
     // Re-enable level selection
@@ -265,6 +274,16 @@ function checkHit(note) {
 
 function updateScore() {
     document.querySelector('#score span').textContent = score;
+    // Update high score in real-time if current score beats it
+    if (score > highScore) {
+        document.querySelector('#high-score span').textContent = score;
+    }
+}
+
+function updateScoreDisplay() {
+    document.querySelector('#score span').textContent = score;
+    document.querySelector('#high-score span').textContent = highScore;
+    document.querySelector('#last-score span').textContent = lastScore;
 }
 
 // Start when page loads

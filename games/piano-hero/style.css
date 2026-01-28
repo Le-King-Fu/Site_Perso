@@ -76,10 +76,25 @@ body {
     gap: 30px;
 }
 
-#score {
+#scores {
+    display: flex;
+    gap: 20px;
     color: #fff;
+}
+
+#score {
     font-size: 24px;
     font-weight: bold;
+}
+
+#high-score {
+    font-size: 16px;
+    color: #fbbf24;
+}
+
+#last-score {
+    font-size: 16px;
+    color: #888;
 }
 
 #start-btn {
