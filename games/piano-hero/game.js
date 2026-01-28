@@ -12,8 +12,16 @@ canvas.height = CANVAS_HEIGHT;
 const NOTES = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
 const LANE_WIDTH = CANVAS_WIDTH / NOTES.length;
 const NOTE_HEIGHT = 40;
-const NOTE_SPEED = 3;
 const HIT_ZONE_Y = CANVAS_HEIGHT - 60;
+
+// Level configurations: [noteSpeed, spawnInterval]
+const LEVELS = [
+    { speed: 1.5, spawnInterval: 1600, name: 'Beginner' },
+    { speed: 2,   spawnInterval: 1300, name: 'Easy' },
+    { speed: 2.5, spawnInterval: 1000, name: 'Medium' },
+    { speed: 3,   spawnInterval: 800,  name: 'Hard' },
+    { speed: 4,   spawnInterval: 600,  name: 'Expert' }
+];
 
 // Keyboard mapping
 const KEY_MAP = {
@@ -31,6 +39,9 @@ let gameRunning = false;
 let score = 0;
 let fallingNotes = [];
 let lastNoteTime = 0;
+let currentLevel = 0;
+let noteSpeed = LEVELS[0].speed;
+let spawnInterval = LEVELS[0].spawnInterval;
 
 // Colors for each lane
 const LANE_COLORS = [
@@ -45,6 +56,7 @@ const LANE_COLORS = [
 
 // Initialize
 function init() {
+    createLevelSelector();
     document.getElementById('start-btn').addEventListener('click', startGame);
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('keyup', handleKeyUp);
@@ -53,14 +65,66 @@ function init() {
     draw();
 }
 
+function createLevelSelector() {
+    const levelSelector = document.getElementById('level-selector');
+    if (!levelSelector) return;
+
+    LEVELS.forEach((level, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'level-btn' + (index === 0 ? ' active' : '');
+        btn.textContent = (index + 1);
+        btn.title = level.name;
+        btn.addEventListener('click', () => selectLevel(index));
+        levelSelector.appendChild(btn);
+    });
+
+    updateLevelDisplay();
+}
+
+function selectLevel(index) {
+    if (gameRunning) return;
+
+    currentLevel = index;
+    noteSpeed = LEVELS[index].speed;
+    spawnInterval = LEVELS[index].spawnInterval;
+
+    // Update button states
+    document.querySelectorAll('.level-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', i === index);
+    });
+
+    updateLevelDisplay();
+}
+
+function updateLevelDisplay() {
+    const levelName = document.getElementById('level-name');
+    if (levelName) {
+        levelName.textContent = LEVELS[currentLevel].name;
+    }
+}
+
 function startGame() {
     gameRunning = true;
     score = 0;
     fallingNotes = [];
+    lastNoteTime = 0;
     updateScore();
     document.getElementById('start-btn').textContent = 'Playing...';
     document.getElementById('start-btn').disabled = true;
+
+    // Disable level selection during game
+    document.querySelectorAll('.level-btn').forEach(btn => btn.disabled = true);
+
     gameLoop();
+}
+
+function stopGame() {
+    gameRunning = false;
+    document.getElementById('start-btn').textContent = 'Start Game';
+    document.getElementById('start-btn').disabled = false;
+
+    // Re-enable level selection
+    document.querySelectorAll('.level-btn').forEach(btn => btn.disabled = false);
 }
 
 function gameLoop() {
@@ -74,7 +138,7 @@ function gameLoop() {
 function update() {
     // Spawn new notes
     const now = Date.now();
-    if (now - lastNoteTime > 1600) { // New note every 800ms
+    if (now - lastNoteTime > spawnInterval) {
         spawnNote();
         lastNoteTime = now;
     }
@@ -82,7 +146,7 @@ function update() {
     // Move notes down
     for (let i = fallingNotes.length - 1; i >= 0; i--) {
         const note = fallingNotes[i];
-        note.y += NOTE_SPEED;
+        note.y += noteSpeed;
 
         // Remove notes that passed the bottom
         if (note.y > CANVAS_HEIGHT) {

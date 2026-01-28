@@ -101,3 +101,54 @@ body {
 #start-btn:active {
     transform: translateY(0);
 }
+
+#start-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#level-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+}
+
+#level-selector {
+    display: flex;
+    gap: 5px;
+}
+
+.level-btn {
+    width: 32px;
+    height: 32px;
+    border: 2px solid #4a4a8a;
+    background: transparent;
+    color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.level-btn:hover {
+    border-color: #6366f1;
+    background: rgba(99, 102, 241, 0.2);
+}
+
+.level-btn.active {
+    background: #6366f1;
+    border-color: #6366f1;
+}
+
+.level-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#level-name {
+    color: #888;
+    font-size: 14px;
+    min-width: 70px;
+}
