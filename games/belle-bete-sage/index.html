@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>La Belle, la Bête et la Sage</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <script type="module" crossorigin src="./assets/index-Y1Qm6BC7.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-DzDYbyCM.css">
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Écran de sélection de personnage -->
+    <div id="character-select">
+      <h1>La Belle, la Bête et la Sage</h1>
+      <p class="subtitle">Choisis ton chien!</p>
+
+      <div class="characters">
+        <div class="character-card" data-character="flora">
+          <div class="character-sprite flora-sprite"></div>
+          <h2>Flora</h2>
+          <p class="breed">Berger Allemand</p>
+          <div class="stats">
+            <div class="stat">
+              <span class="stat-label">Force</span>
+              <span class="stat-value">
+                <span class="filled"></span>
+                <span class="filled"></span>
+                <span class="filled"></span>
+                <span class="empty"></span>
+                <span class="empty"></span>
+              </span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Vitesse</span>
+              <span class="stat-value">
+                <span class="filled"></span>
+                <span class="filled"></span>
+                <span class="filled"></span>
+                <span class="filled"></span>
+                <span class="empty"></span>
+              </span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Beauté</span>
+              <span class="stat-value">
+                <span class="filled"></span>
+                <span class="filled"></span>
+                <span class="filled"></span>
+                <span class="filled"></span>
+                <span class="filled"></span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="character-card" data-character="nouki">
+          <div class="character-sprite nouki-sprite"></div>
+          <h2>Nouki</h2>
+          <p class="breed">Labrador Dépeigné</p>
+          <div class="stats">
+            <div class="stat">
+              <span class="stat-label">Force</span>
+              <span class="stat-value">
+                <span class="filled"></span>
+                <span class="filled"></span>
+                <span class="filled"></span>
+                <span class="filled"></span>
+                <span class="filled"></span>
+              </span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Vitesse</span>
+              <span class="stat-value">
+                <span class="filled"></span>
+                <span class="filled"></span>
+                <span class="filled"></span>
+                <span class="empty"></span>
+                <span class="empty"></span>
+              </span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Beauté</span>
+              <span class="stat-value">
+                <span class="filled"></span>
+                <span class="filled"></span>
+                <span class="filled"></span>
+                <span class="filled"></span>
+                <span class="empty"></span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="character-card" data-character="laska">
+          <div class="character-sprite laska-sprite"></div>
+          <h2>Laska</h2>
+          <p class="breed">Berger Australien</p>
+          <div class="stats">
+            <div class="stat">
+              <span class="stat-label">Force</span>
+              <span class="stat-value">
+                <span class="filled"></span>
+                <span class="filled"></span>
+                <span class="filled"></span>
+                <span class="empty"></span>
+                <span class="empty"></span>
+              </span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Vitesse</span>
+              <span class="stat-value">
+                <span class="filled"></span>
+                <span class="filled"></span>
+                <span class="filled"></span>
+                <span class="filled"></span>
+                <span class="filled"></span>
+              </span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Beauté</span>
+              <span class="stat-value">
+                <span class="filled"></span>
+                <span class="filled"></span>
+                <span class="filled"></span>
+                <span class="filled"></span>
+                <span class="empty"></span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interface de jeu -->
+    <div id="game-ui" class="hidden">
+      <div id="score-display">
+        <span id="score">0</span>
+        <span id="level">DÉBUTANT</span>
+      </div>
+      <div id="lives-display"></div>
+    </div>
+
+    <!-- Écran de game over -->
+    <div id="game-over" class="hidden">
+      <h1>GAME OVER</h1>
+      <p>Score: <span id="final-score">0</span></p>
+      <p>Record: <span id="high-score">0</span></p>
+      <button id="restart-btn">REJOUER</button>
+      <button id="menu-btn">MENU</button>
+    </div>
+
+    <!-- Message Level Up -->
+    <div id="level-up" class="hidden">
+      <span>LEVEL UP!</span>
+    </div>
+
+    <!-- Instructions -->
+    <div id="instructions">
+      <p>FLÈCHES: Gauche/Droite pour changer de voie | ESPACE: Sauter | ÉCHAP: Pause</p>
+    </div>
+  </div>
+
+</body>
+</html>
