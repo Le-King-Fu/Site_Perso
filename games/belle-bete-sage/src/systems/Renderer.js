@@ -179,27 +179,340 @@ export class Renderer {
     const s = this.scale;
     const x = LANES.POSITIONS[obstacle.lane] * s - (obstacle.width * s) / 2;
     const y = obstacle.y * s;
+    const w = obstacle.width * s;
+    const h = obstacle.height * s;
 
     // Ombre
     ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-    ctx.fillRect(x + 4, y + obstacle.height * s - 4, obstacle.width * s - 8, 8);
+    ctx.fillRect(x + 4, y + h - 4, w - 8, 8);
 
-    // Corps de l'obstacle
-    ctx.fillStyle = obstacle.color;
-    ctx.fillRect(x, y, obstacle.width * s, obstacle.height * s);
-
-    // Contour néon
-    ctx.strokeStyle = COLORS.ACCENT;
-    ctx.lineWidth = 1;
-    ctx.strokeRect(x, y, obstacle.width * s, obstacle.height * s);
+    // Dessiner selon le type d'obstacle
+    switch (obstacle.name) {
+      case 'poubelle':
+        this.drawPoubelle(ctx, x, y, w, h);
+        break;
+      case 'cone':
+        this.drawCone(ctx, x, y, w, h);
+        break;
+      case 'chat':
+        this.drawChat(ctx, x, y, w, h);
+        break;
+      case 'rat':
+        this.drawRat(ctx, x, y, w, h);
+        break;
+      case 'voiture':
+        this.drawVoiture(ctx, x, y, w, h);
+        break;
+      case 'moto':
+        this.drawMoto(ctx, x, y, w, h);
+        break;
+      case 'vache':
+        this.drawVache(ctx, x, y, w, h);
+        break;
+      default:
+        ctx.fillStyle = obstacle.color;
+        ctx.fillRect(x, y, w, h);
+    }
 
     // Effet de glow pour les grands obstacles
     if (obstacle.large) {
+      ctx.strokeStyle = COLORS.ACCENT;
       ctx.shadowColor = COLORS.ACCENT;
       ctx.shadowBlur = 10;
-      ctx.strokeRect(x, y, obstacle.width * s, obstacle.height * s);
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x, y, w, h);
       ctx.shadowBlur = 0;
     }
+  }
+
+  /** Poubelle (trash can) */
+  drawPoubelle(ctx, x, y, w, h) {
+    // Corps de la poubelle
+    ctx.fillStyle = '#555555';
+    ctx.fillRect(x + w * 0.1, y + h * 0.2, w * 0.8, h * 0.8);
+    // Couvercle
+    ctx.fillStyle = '#666666';
+    ctx.fillRect(x, y, w, h * 0.25);
+    // Poignée du couvercle
+    ctx.fillStyle = '#444444';
+    ctx.fillRect(x + w * 0.35, y - h * 0.1, w * 0.3, h * 0.15);
+    // Rayures horizontales
+    ctx.fillStyle = '#444444';
+    ctx.fillRect(x + w * 0.15, y + h * 0.4, w * 0.7, h * 0.06);
+    ctx.fillRect(x + w * 0.15, y + h * 0.6, w * 0.7, h * 0.06);
+  }
+
+  /** Cone (traffic cone) */
+  drawCone(ctx, x, y, w, h) {
+    // Base
+    ctx.fillStyle = '#222222';
+    ctx.fillRect(x, y + h * 0.85, w, h * 0.15);
+    // Corps du cône (trapèze)
+    ctx.fillStyle = '#ff6b00';
+    ctx.beginPath();
+    ctx.moveTo(x + w * 0.1, y + h * 0.85);
+    ctx.lineTo(x + w * 0.35, y);
+    ctx.lineTo(x + w * 0.65, y);
+    ctx.lineTo(x + w * 0.9, y + h * 0.85);
+    ctx.closePath();
+    ctx.fill();
+    // Bandes blanches réfléchissantes
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.moveTo(x + w * 0.18, y + h * 0.55);
+    ctx.lineTo(x + w * 0.4, y + h * 0.15);
+    ctx.lineTo(x + w * 0.6, y + h * 0.15);
+    ctx.lineTo(x + w * 0.82, y + h * 0.55);
+    ctx.lineTo(x + w * 0.78, y + h * 0.65);
+    ctx.lineTo(x + w * 0.55, y + h * 0.25);
+    ctx.lineTo(x + w * 0.45, y + h * 0.25);
+    ctx.lineTo(x + w * 0.22, y + h * 0.65);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  /** Chat (cat) */
+  drawChat(ctx, x, y, w, h) {
+    // Corps
+    ctx.fillStyle = '#333333';
+    ctx.fillRect(x + w * 0.15, y + h * 0.35, w * 0.7, h * 0.55);
+    // Tête
+    ctx.fillRect(x + w * 0.25, y + h * 0.1, w * 0.5, h * 0.4);
+    // Oreilles triangulaires
+    ctx.beginPath();
+    ctx.moveTo(x + w * 0.25, y + h * 0.25);
+    ctx.lineTo(x + w * 0.15, y);
+    ctx.lineTo(x + w * 0.4, y + h * 0.1);
+    ctx.closePath();
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(x + w * 0.75, y + h * 0.25);
+    ctx.lineTo(x + w * 0.85, y);
+    ctx.lineTo(x + w * 0.6, y + h * 0.1);
+    ctx.closePath();
+    ctx.fill();
+    // Yeux (brillants)
+    ctx.fillStyle = '#44ff44';
+    ctx.fillRect(x + w * 0.32, y + h * 0.22, w * 0.12, h * 0.1);
+    ctx.fillRect(x + w * 0.56, y + h * 0.22, w * 0.12, h * 0.1);
+    // Pupilles
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(x + w * 0.36, y + h * 0.24, w * 0.04, h * 0.06);
+    ctx.fillRect(x + w * 0.6, y + h * 0.24, w * 0.04, h * 0.06);
+    // Queue
+    ctx.fillStyle = '#333333';
+    ctx.fillRect(x + w * 0.8, y + h * 0.4, w * 0.25, h * 0.12);
+    ctx.fillRect(x + w * 0.95, y + h * 0.2, w * 0.1, h * 0.25);
+  }
+
+  /** Rat */
+  drawRat(ctx, x, y, w, h) {
+    // Corps ovale
+    ctx.fillStyle = '#8b7355';
+    ctx.beginPath();
+    ctx.ellipse(x + w * 0.45, y + h * 0.6, w * 0.4, h * 0.35, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Tête
+    ctx.beginPath();
+    ctx.ellipse(x + w * 0.15, y + h * 0.5, w * 0.2, h * 0.25, -0.3, 0, Math.PI * 2);
+    ctx.fill();
+    // Oreilles rondes
+    ctx.fillStyle = '#a08060';
+    ctx.beginPath();
+    ctx.arc(x + w * 0.1, y + h * 0.25, w * 0.12, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + w * 0.25, y + h * 0.2, w * 0.1, 0, Math.PI * 2);
+    ctx.fill();
+    // Oeil
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.arc(x + w * 0.1, y + h * 0.45, w * 0.06, 0, Math.PI * 2);
+    ctx.fill();
+    // Nez rose
+    ctx.fillStyle = '#ffaaaa';
+    ctx.beginPath();
+    ctx.arc(x + w * 0.02, y + h * 0.55, w * 0.05, 0, Math.PI * 2);
+    ctx.fill();
+    // Queue
+    ctx.strokeStyle = '#8b7355';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(x + w * 0.85, y + h * 0.6);
+    ctx.quadraticCurveTo(x + w * 1.1, y + h * 0.3, x + w * 1.15, y + h * 0.7);
+    ctx.stroke();
+  }
+
+  /** Voiture (car) */
+  drawVoiture(ctx, x, y, w, h) {
+    // Carrosserie bas
+    ctx.fillStyle = '#cc3333';
+    ctx.fillRect(x, y + h * 0.4, w, h * 0.45);
+    // Carrosserie haut (cabine)
+    ctx.fillRect(x + w * 0.2, y + h * 0.1, w * 0.55, h * 0.35);
+    // Pare-brise
+    ctx.fillStyle = '#88ccff';
+    ctx.beginPath();
+    ctx.moveTo(x + w * 0.22, y + h * 0.4);
+    ctx.lineTo(x + w * 0.3, y + h * 0.15);
+    ctx.lineTo(x + w * 0.5, y + h * 0.15);
+    ctx.lineTo(x + w * 0.5, y + h * 0.4);
+    ctx.closePath();
+    ctx.fill();
+    // Vitre arrière
+    ctx.beginPath();
+    ctx.moveTo(x + w * 0.55, y + h * 0.15);
+    ctx.lineTo(x + w * 0.72, y + h * 0.15);
+    ctx.lineTo(x + w * 0.75, y + h * 0.4);
+    ctx.lineTo(x + w * 0.55, y + h * 0.4);
+    ctx.closePath();
+    ctx.fill();
+    // Roues
+    ctx.fillStyle = '#222222';
+    ctx.beginPath();
+    ctx.arc(x + w * 0.2, y + h * 0.85, w * 0.12, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + w * 0.8, y + h * 0.85, w * 0.12, 0, Math.PI * 2);
+    ctx.fill();
+    // Jantes
+    ctx.fillStyle = '#888888';
+    ctx.beginPath();
+    ctx.arc(x + w * 0.2, y + h * 0.85, w * 0.06, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + w * 0.8, y + h * 0.85, w * 0.06, 0, Math.PI * 2);
+    ctx.fill();
+    // Phares
+    ctx.fillStyle = '#ffff88';
+    ctx.fillRect(x, y + h * 0.45, w * 0.06, h * 0.12);
+    ctx.fillRect(x + w * 0.94, y + h * 0.45, w * 0.06, h * 0.12);
+  }
+
+  /** Moto (motorcycle) */
+  drawMoto(ctx, x, y, w, h) {
+    // Roue arrière
+    ctx.fillStyle = '#222222';
+    ctx.beginPath();
+    ctx.arc(x + w * 0.75, y + h * 0.75, w * 0.2, 0, Math.PI * 2);
+    ctx.fill();
+    // Roue avant
+    ctx.beginPath();
+    ctx.arc(x + w * 0.2, y + h * 0.75, w * 0.18, 0, Math.PI * 2);
+    ctx.fill();
+    // Jantes
+    ctx.fillStyle = '#888888';
+    ctx.beginPath();
+    ctx.arc(x + w * 0.75, y + h * 0.75, w * 0.08, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + w * 0.2, y + h * 0.75, w * 0.07, 0, Math.PI * 2);
+    ctx.fill();
+    // Cadre
+    ctx.fillStyle = '#4444aa';
+    ctx.beginPath();
+    ctx.moveTo(x + w * 0.2, y + h * 0.6);
+    ctx.lineTo(x + w * 0.35, y + h * 0.2);
+    ctx.lineTo(x + w * 0.7, y + h * 0.25);
+    ctx.lineTo(x + w * 0.75, y + h * 0.55);
+    ctx.lineTo(x + w * 0.5, y + h * 0.5);
+    ctx.closePath();
+    ctx.fill();
+    // Réservoir
+    ctx.fillStyle = '#5555cc';
+    ctx.beginPath();
+    ctx.ellipse(x + w * 0.5, y + h * 0.35, w * 0.18, h * 0.15, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Guidon
+    ctx.strokeStyle = '#666666';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(x + w * 0.25, y + h * 0.1);
+    ctx.lineTo(x + w * 0.35, y + h * 0.25);
+    ctx.lineTo(x + w * 0.45, y + h * 0.1);
+    ctx.stroke();
+    // Phare
+    ctx.fillStyle = '#ffff88';
+    ctx.beginPath();
+    ctx.arc(x + w * 0.28, y + h * 0.35, w * 0.06, 0, Math.PI * 2);
+    ctx.fill();
+    // Échappement
+    ctx.fillStyle = '#888888';
+    ctx.fillRect(x + w * 0.6, y + h * 0.55, w * 0.3, h * 0.08);
+  }
+
+  /** Vache (cow) */
+  drawVache(ctx, x, y, w, h) {
+    // Corps
+    ctx.fillStyle = '#f5f5dc';
+    ctx.fillRect(x + w * 0.15, y + h * 0.3, w * 0.7, h * 0.45);
+    // Taches noires
+    ctx.fillStyle = '#222222';
+    ctx.beginPath();
+    ctx.ellipse(x + w * 0.3, y + h * 0.45, w * 0.12, h * 0.15, 0.3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(x + w * 0.6, y + h * 0.5, w * 0.1, h * 0.12, -0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(x + w * 0.75, y + h * 0.4, w * 0.08, h * 0.1, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Tête
+    ctx.fillStyle = '#f5f5dc';
+    ctx.fillRect(x, y + h * 0.2, w * 0.25, h * 0.35);
+    // Museau rose
+    ctx.fillStyle = '#ffcccc';
+    ctx.fillRect(x - w * 0.05, y + h * 0.35, w * 0.15, h * 0.18);
+    // Narines
+    ctx.fillStyle = '#333333';
+    ctx.beginPath();
+    ctx.arc(x + w * 0.02, y + h * 0.42, w * 0.025, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + w * 0.08, y + h * 0.42, w * 0.025, 0, Math.PI * 2);
+    ctx.fill();
+    // Yeux
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.arc(x + w * 0.08, y + h * 0.28, w * 0.03, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + w * 0.18, y + h * 0.28, w * 0.03, 0, Math.PI * 2);
+    ctx.fill();
+    // Oreilles
+    ctx.fillStyle = '#f5f5dc';
+    ctx.beginPath();
+    ctx.ellipse(x + w * 0.02, y + h * 0.18, w * 0.08, h * 0.06, -0.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(x + w * 0.23, y + h * 0.18, w * 0.08, h * 0.06, 0.5, 0, Math.PI * 2);
+    ctx.fill();
+    // Cornes
+    ctx.fillStyle = '#ddccaa';
+    ctx.beginPath();
+    ctx.moveTo(x + w * 0.05, y + h * 0.2);
+    ctx.lineTo(x - w * 0.02, y + h * 0.05);
+    ctx.lineTo(x + w * 0.1, y + h * 0.15);
+    ctx.closePath();
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(x + w * 0.2, y + h * 0.2);
+    ctx.lineTo(x + w * 0.27, y + h * 0.05);
+    ctx.lineTo(x + w * 0.15, y + h * 0.15);
+    ctx.closePath();
+    ctx.fill();
+    // Pattes
+    ctx.fillStyle = '#f5f5dc';
+    ctx.fillRect(x + w * 0.2, y + h * 0.7, w * 0.1, h * 0.3);
+    ctx.fillRect(x + w * 0.35, y + h * 0.7, w * 0.1, h * 0.3);
+    ctx.fillRect(x + w * 0.55, y + h * 0.7, w * 0.1, h * 0.3);
+    ctx.fillRect(x + w * 0.7, y + h * 0.7, w * 0.1, h * 0.3);
+    // Sabots
+    ctx.fillStyle = '#333333';
+    ctx.fillRect(x + w * 0.2, y + h * 0.92, w * 0.1, h * 0.08);
+    ctx.fillRect(x + w * 0.35, y + h * 0.92, w * 0.1, h * 0.08);
+    ctx.fillRect(x + w * 0.55, y + h * 0.92, w * 0.1, h * 0.08);
+    ctx.fillRect(x + w * 0.7, y + h * 0.92, w * 0.1, h * 0.08);
   }
 
   /**
